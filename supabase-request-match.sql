@@ -1,4 +1,6 @@
--- 재매칭 시 남은 데이터 충돌 방지: 매번 호출 시 해당 세션을 무조건 waiting으로 초기화(이전 matched/partner 초기화). Supabase SQL Editor에서 이 전체를 실행하세요.
+-- 한쪽만 매칭되는 문제 수정: 이미 matched인 행은 재호출 시 덮어쓰지 않고 기존 payload 반환.
+-- 재매칭 시에만 초기화: 아직 waiting인 세션만 waiting으로 갱신하고, 이미 matched면 유지.
+-- Supabase SQL Editor에서 이 전체를 실행하세요.
 create or replace function public.request_match(
   p_session_id text,
   p_model text,
@@ -19,6 +21,16 @@ declare
   v_game_id uuid;
   v_existing record;
 begin
+  -- 이미 매칭된 세션은 덮어쓰지 않고 기존 결과만 반환 (대기 측 폴링 시 매칭 유지)
+  select id, status, side, model, condition, partner_model, partner_side, partner_condition, game_id
+  into v_existing
+  from match_queue
+  where session_id = p_session_id
+  limit 1;
+  if v_existing.id is not null and v_existing.status = 'matched' then
+    return jsonb_build_object('matched', true, 'payload', jsonb_build_object('mySide', v_existing.side, 'model', v_existing.model, 'condition', v_existing.condition, 'oppModel', v_existing.partner_model, 'oppSide', v_existing.partner_side, 'oppCondition', v_existing.partner_condition, 'game_id', v_existing.game_id));
+  end if;
+
   v_need_side := case when p_side = 'left' then 'right' else 'left' end;
   insert into match_queue (session_id, model, side, condition, usage_months, status)
   values (p_session_id, p_model, p_side, p_condition, p_usage_months, 'waiting')
@@ -27,12 +39,12 @@ begin
     side = excluded.side,
     condition = excluded.condition,
     usage_months = excluded.usage_months,
-    status = 'waiting',
-    partner_session_id = null,
-    partner_model = null,
-    partner_side = null,
-    partner_condition = null,
-    game_id = null,
+    status = case when match_queue.status = 'matched' then match_queue.status else 'waiting' end,
+    partner_session_id = case when match_queue.status = 'matched' then match_queue.partner_session_id else null end,
+    partner_model = case when match_queue.status = 'matched' then match_queue.partner_model else null end,
+    partner_side = case when match_queue.status = 'matched' then match_queue.partner_side else null end,
+    partner_condition = case when match_queue.status = 'matched' then match_queue.partner_condition else null end,
+    game_id = case when match_queue.status = 'matched' then match_queue.game_id else null end,
     created_at = now()
   returning id into v_my_id;
   select status, side, model, condition, partner_model, partner_side, partner_condition, game_id
