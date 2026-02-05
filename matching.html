@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 매칭 중 | 콩한쪽</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #1a0f0f;
+      --bg-gradient: radial-gradient(120% 120% at 10% 10%, #2d1515 0%, #1a0f0f 40%, #0d0808 100%);
+      --ink: #f5e6e6;
+      --muted: #a08080;
+      --brand: #c0392b;
+      --brand-strong: #922b21;
+      --accent: #27ae60;
+      --surface: rgba(255, 255, 255, 0.08);
+      --border: rgba(160, 80, 80, 0.2);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      background-image: var(--bg-gradient);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 56px 16px 24px;
+      box-sizing: border-box;
+    }
+
+    @media (min-width: 720px) {
+      .page {
+        flex-direction: row;
+        align-items: stretch;
+        gap: 0;
+        padding: 56px 24px 24px;
+      }
+    }
+
+    .back {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      z-index: 10;
+    }
+    .back:hover { color: var(--brand-strong); }
+
+    /* 왼쪽: 매칭 중 / 로딩 */
+    .matching-side {
+      flex: 0 0 auto;
+      width: 100%;
+      max-width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 220px;
+      padding: 24px 16px;
+      position: relative;
+      box-sizing: border-box;
+    }
+
+    @media (min-width: 720px) {
+      .matching-side {
+        flex: 0 0 42%;
+        min-height: 100vh;
+        padding: 60px 40px;
+      }
+    }
+
+    .matching-side.complete .loading-content { display: none; }
+    .matching-side.complete .complete-content { display: flex; }
+    .loading-content { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+    .complete-content { display: none; flex-direction: column; align-items: center; gap: 20px; }
+
+    .loading-spinner {
+      width: 64px;
+      height: 64px;
+      border: 4px solid rgba(255,255,255,0.15);
+      border-top-color: var(--brand);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .loading-sub {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .complete-badge {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--accent);
+      text-shadow: 0 0 20px rgba(39, 174, 96, 0.5);
+    }
+
+    .complete-desc {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.8);
+      text-align: center;
+    }
+
+    .btn-game-entry {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 16px 32px;
+      border-radius: 14px;
+      border: none;
+      background: linear-gradient(130deg, var(--brand-strong), var(--brand));
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(192, 57, 43, 0.4);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-game-entry:hover {
+      transform: scale(1.03);
+      box-shadow: 0 12px 32px rgba(192, 57, 43, 0.5);
+    }
+
+    /* 오른쪽: 서비스 설득 콘텐츠 */
+    .copy-side {
+      flex: 1;
+      width: 100%;
+      max-width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px 16px 32px;
+      overflow-y: auto;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    @media (min-width: 720px) {
+      .copy-side {
+        padding: 60px 48px;
+        max-width: 58%;
+      }
+    }
+
+    .copy-side .hero-img {
+      width: auto;
+      max-width: min(200px, 50vw);
+      height: auto;
+      margin: 0 auto 20px;
+      display: block;
+      filter: drop-shadow(0 12px 32px rgba(0,0,0,0.4));
+    }
+
+    .copy-side .hook {
+      font-size: clamp(1.25rem, 5vw, 1.8rem);
+      font-weight: 900;
+      margin: 0 0 12px;
+      color: #fff;
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+      max-width: 100%;
+    }
+
+    .copy-side .hook span { color: var(--brand-strong); }
+
+    .copy-side .hook-sub {
+      font-size: clamp(0.8rem, 2.2vw, 0.9rem);
+      color: var(--muted);
+      margin: -4px 0 14px;
+      line-height: 1.45;
+    }
+
+    .copy-side .tag {
+      font-size: clamp(0.95rem, 3vw, 1rem);
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .copy-side .one-liner {
+      font-size: clamp(0.95rem, 2.8vw, 1.05rem);
+      line-height: 1.55;
+      color: rgba(255,255,255,0.9);
+      margin: 0 0 10px;
+      font-weight: 500;
+      max-width: 100%;
+    }
+
+    .copy-side .punch {
+      font-size: clamp(1rem, 3vw, 1.1rem);
+      font-weight: 800;
+      color: #fff;
+      margin-top: 8px;
+    }
+
+    .copy-side .eco {
+      margin-top: 18px;
+      line-height: 1.5;
+    }
+
+    .copy-side .eco strong {
+      font-size: clamp(1.1rem, 3.5vw, 1.25rem);
+      font-weight: 900;
+      color: var(--accent);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .copy-side .eco-small {
+      display: block;
+      font-size: clamp(0.75rem, 2vw, 0.85rem);
+      color: var(--muted);
+    }
+
+    .copy-side .eco-tagline {
+      display: block;
+      font-size: clamp(0.9rem, 2.5vw, 0.95rem);
+      font-weight: 600;
+      color: rgba(255,255,255,0.9);
+      margin-top: 6px;
+    }
+
+    .no-match-msg {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 24px;
+      color: var(--muted);
+    }
+    .no-match-msg .btn-back {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 14px 28px;
+      border-radius: 14px;
+      background: var(--surface);
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 700;
+      border: 2px solid var(--border);
+    }
+    .no-match-msg .btn-back:hover { border-color: var(--brand); color: #fff; }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <a class="back" href="match.html">← 매칭으로</a>
+
+  <div class="page">
+    <section class="matching-side" id="matchingSide">
+      <div class="loading-content">
+        <div class="loading-spinner" aria-hidden="true"></div>
+        <p class="loading-text">매칭 중...</p>
+        <p class="loading-sub">나와 꼭 맞는 상대를 찾고 있어요</p>
+      </div>
+      <div class="complete-content">
+        <p class="complete-badge">✓ 매칭 완료!</p>
+        <p class="complete-desc" id="completeDesc">상대를 찾았어요.<br>게임에서 이기면 에어팟 완전체를 받을 수 있어요.</p>
+        <a href="#" class="btn-game-entry" id="btnGameEntry">게임 입장하기</a>
+      </div>
+    </section>
+
+    <section class="copy-side">
+      <img src="assets/airpods-complete.png" alt="" class="hero-img">
+      <p class="tag">분실도 콘텐츠로! 도파민 한판 거래~ 🎧</p>
+      <h2 class="hook"><span>85%</span> 절감 · <span>200%</span> 더 재밌게</h2>
+      <p class="hook-sub">새로 사면 11만 원, 이기면 1만 원대로 완전체 합체!</p>
+      <p class="one-liner">이기면 완전체 가져가고, 수수료만 기분 좋게 내면 끝~ 💸</p>
+      <p class="punch">한쪽만 있어도 괜찮아. 게임 한 판 이기면 완전체 내 거! 기분 좋게 한판 해볼까요? 😊</p>
+      <p class="eco"><strong>ECO!</strong><span class="eco-small">전자 폐기물 최소화</span><span class="eco-tagline">세상의 모든 콩이 다시 짝을 찾는 그날까지!</span></p>
+    </section>
+  </div>
+
+  <div class="no-match-msg hidden" id="noMatchMsg">
+    <p>아직 준비된 파트너가 없어요.<br>잠시 후 다시 시도해 주세요!</p>
+    <a href="match.html" class="btn-back">매칭 화면으로 돌아가기</a>
+  </div>
+
+  <script>
+    (function () {
+      const MATCH_DURATION_MS = 4000;
+      const key = 'matchPending';
+      const data = sessionStorage.getItem(key);
+
+      const matchingSide = document.getElementById('matchingSide');
+      const completeDesc = document.getElementById('completeDesc');
+      const btnGameEntry = document.getElementById('btnGameEntry');
+      const noMatchMsg = document.getElementById('noMatchMsg');
+
+      if (!data) {
+        document.querySelector('.page').classList.add('hidden');
+        noMatchMsg.classList.remove('hidden');
+        return;
+      }
+
+      let payload;
+      try {
+        payload = JSON.parse(data);
+      } catch (e) {
+        noMatchMsg.classList.remove('hidden');
+        document.querySelector('.page').style.display = 'none';
+        return;
+      }
+
+      if (payload.noMatch) {
+        matchingSide.querySelector('.loading-content').innerHTML = '<p class="loading-text">매칭 결과 없음</p>';
+        setTimeout(() => {
+          sessionStorage.removeItem(key);
+          noMatchMsg.classList.remove('hidden');
+          document.querySelector('.page').classList.add('hidden');
+        }, 1500);
+        return;
+      }
+
+      const params = new URLSearchParams({
+        mySide: payload.mySide,
+        model: payload.model,
+        condition: payload.condition,
+        oppModel: payload.oppModel,
+        oppSide: payload.oppSide,
+        oppCondition: payload.oppCondition
+      });
+      btnGameEntry.href = 'destiny.html?' + params.toString();
+
+      setTimeout(() => {
+        matchingSide.classList.add('complete');
+      }, MATCH_DURATION_MS);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>에어팟 수령 · 결제 | 콩한쪽</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #1a2e1a;
+      --muted: #4a6b4a;
+      --brand: #2d8a3e;
+      --brand-strong: #1e6b2c;
+      --accent: #f0c14b;
+      --bg: #f0f9f0;
+      --surface: rgba(255, 255, 255, 0.9);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(80% 80% at 50% 0%, rgba(45, 138, 62, 0.12) 0%, transparent 50%),
+                  radial-gradient(60% 60% at 80% 80%, rgba(240, 193, 75, 0.15) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .back-link {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .back-link:hover { color: var(--brand-strong); }
+
+    .congrats {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .congrats .emoji {
+      font-size: 2.5rem;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .congrats h1 {
+      font-size: clamp(1.3rem, 4vw, 1.6rem);
+      font-weight: 800;
+      margin: 0 0 8px;
+      color: var(--brand-strong);
+    }
+
+    .congrats .sub {
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .receipt-card {
+      width: 100%;
+      max-width: 360px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 2px solid rgba(45, 138, 62, 0.25);
+      padding: 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 32px rgba(45, 138, 62, 0.12);
+    }
+
+    .receipt-card h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin: 0 0 16px;
+      color: var(--ink);
+      border-bottom: 2px solid rgba(45, 138, 62, 0.2);
+      padding-bottom: 10px;
+    }
+
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 10px 0;
+      font-size: 0.95rem;
+      color: var(--ink);
+    }
+
+    .receipt-row .label-wrap {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .receipt-row .label-detail {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .receipt-row.total {
+      margin-top: 12px;
+      padding-top: 16px;
+      border-top: 2px solid rgba(45, 138, 62, 0.3);
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--brand-strong);
+    }
+
+    .receipt-row .amount {
+      font-weight: 700;
+      color: var(--brand-strong);
+    }
+
+    .receipt-row.total .amount {
+      font-size: 1.25rem;
+      color: var(--brand-strong);
+    }
+
+    .shipping-note {
+      width: 100%;
+      max-width: 360px;
+      font-size: 0.9rem;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .btn-pay {
+      display: block;
+      width: 100%;
+      max-width: 360px;
+      padding: 18px 24px;
+      border-radius: var(--radius);
+      border: none;
+      background: linear-gradient(130deg, var(--brand-strong), var(--brand));
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(45, 138, 62, 0.35);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      margin-bottom: 20px;
+    }
+
+    .btn-pay:hover {
+      transform: scale(1.02);
+      box-shadow: 0 12px 32px rgba(45, 138, 62, 0.45);
+    }
+
+    .share-section {
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+    }
+
+    .share-section .share-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 14px;
+    }
+
+    .share-btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      padding: 0;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .share-btn:hover {
+      transform: scale(1.08);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .share-btn svg {
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+
+    .share-btn.kakao { background: #fee500; color: #191919; }
+    .share-btn.kakao:hover { filter: brightness(1.05); }
+    .share-btn.instagram { background: linear-gradient(135deg, #f09433, #e4405f); color: #fff; }
+    .share-btn.instagram:hover { filter: brightness(1.1); }
+    .share-btn.facebook { background: #1877f2; color: #fff; }
+    .share-btn.facebook:hover { filter: brightness(1.1); }
+    .share-btn.copy { background: rgba(45, 138, 62, 0.2); color: var(--brand-strong); border: 2px solid rgba(45, 138, 62, 0.4); }
+    .share-btn.copy:hover { background: rgba(45, 138, 62, 0.3); }
+    .share-btn.sms { background: var(--muted); color: #fff; }
+    .share-btn.sms:hover { filter: brightness(1.1); }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <a class="back-link" href="index.html">← 메인으로</a>
+
+    <div class="congrats">
+      <span class="emoji">🎉</span>
+      <h1>축하해요! 이제 완전체로 들을 수 있어요</h1>
+      <p class="sub">에어팟 한 쌍을 되찾았어요. 결제만 하시면 됩니다.</p>
+    </div>
+
+    <div class="receipt-card">
+      <h2>영수증</h2>
+      <div class="receipt-row">
+        <span>상대 참가자 배송비</span>
+        <span class="amount">3,500원</span>
+      </div>
+      <div class="receipt-row">
+        <div class="label-wrap">
+          <span>본인 배송비</span>
+          <div class="label-detail">처음 보낼 때 3,500원 + 에어팟 완전체 수령 배송비 3,500원</div>
+        </div>
+        <span class="amount">7,000원</span>
+      </div>
+      <div class="receipt-row">
+        <span>참가비</span>
+        <span class="amount">10,000원</span>
+      </div>
+      <div class="receipt-row total">
+        <span>총 결제 금액</span>
+        <span class="amount">20,500원</span>
+      </div>
+    </div>
+
+    <p class="shipping-note">회수했던 주소로 다시 보내드립니다.</p>
+
+    <button type="button" class="btn-pay" id="btnPay">결제하기</button>
+
+    <div class="share-section">
+      <p class="share-title">🎧 친구에게 알려주기</p>
+      <div class="share-btns">
+        <a href="#" class="share-btn kakao" id="shareKakao" title="카카오톡" aria-label="카카오톡으로 공유">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3c-5.52 0-10 3.59-10 8 0 2.93 1.89 5.5 4.71 6.87L5.5 21l4.43-2.91c1.18.17 2.39.26 3.57.26 5.52 0 10-3.59 10-8s-4.48-8-10-8z"/></svg>
+        </a>
+        <a href="#" class="share-btn instagram" id="shareInstagram" title="인스타그램" aria-label="인스타그램 공유">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.16c3.2 0 3.58 0 4.85.07 3.25.15 4.77 1.69 4.92 4.92.06 1.27.07 1.65.07 4.85s0 3.58-.07 4.85c-.15 3.23-1.66 4.77-4.92 4.92-1.27.06-1.65.07-4.85.07s-3.58 0-4.85-.07c-3.26-.15-4.77-1.7-4.92-4.92-.06-1.27-.07-1.65-.07-4.85s0-3.58.07-4.85C2.38 3.92 3.9 2.38 7.15 2.23 8.42 2.18 8.8 2.16 12 2.16zM12 0C8.74 0 8.33 0 7.05.07 2.7.27.27 2.7.07 7.05 0 8.33 0 8.74 0 12s0 3.67.07 4.95c.2 4.35 2.63 6.78 6.98 6.98C8.33 24 8.74 24 12 24s3.67 0 4.95-.07c4.35-.2 6.78-2.63 6.98-6.98.04-1.28.07-1.69.07-4.95S24 8.33 23.93 7.05C23.73 2.7 21.3.27 16.95.07 15.67 0 15.26 0 12 0zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.41-11.37a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg>
+        </a>
+        <a href="#" class="share-btn facebook" id="shareFacebook" title="페이스북" aria-label="페이스북으로 공유">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </a>
+        <button type="button" class="share-btn copy" id="shareCopy" title="URL 복사" aria-label="URL 복사">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+        <a href="#" class="share-btn sms" id="shareSms" title="문자" aria-label="문자로 공유">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('btnPay').addEventListener('click', () => {
+      alert('결제 기능은 준비 중입니다.');
+    });
+
+    var shareUrl = (function() {
+      var origin = window.location.origin;
+      var path = window.location.pathname.replace(/\/receipt\.html$/, '') || '';
+      return origin + path + (path.endsWith('/') ? '' : '/') + 'index.html';
+    })();
+    var shareText = '콩한쪽 — 잃어버린 에어팟을 건 운명의 게임 🎧';
+
+    document.getElementById('shareKakao').addEventListener('click', function(e) {
+      e.preventDefault();
+      if (typeof Kakao !== 'undefined' && Kakao.isInitialized()) {
+        Kakao.Share.sendDefault({ objectType: 'feed', content: { title: '콩한쪽', description: shareText, link: { webUrl: shareUrl } } });
+      } else {
+        window.open('https://story.kakao.com/share?url=' + encodeURIComponent(shareUrl), '_blank', 'width=500,height=600');
+      }
+    });
+
+    document.getElementById('shareInstagram').addEventListener('click', function(e) {
+      e.preventDefault();
+      navigator.clipboard.writeText(shareUrl).then(function() { alert('링크가 복사되었어요. 인스타에 붙여넣기 하세요!'); }).catch(function() { prompt('아래 URL을 복사하세요', shareUrl); });
+    });
+
+    document.getElementById('shareFacebook').setAttribute('href', 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(shareUrl));
+    document.getElementById('shareFacebook').setAttribute('target', '_blank');
+
+    document.getElementById('shareCopy').addEventListener('click', function() {
+      navigator.clipboard.writeText(shareUrl).then(function() { alert('URL이 복사되었어요!'); }).catch(function() { prompt('아래 URL을 복사하세요', shareUrl); });
+    });
+
+    document.getElementById('shareSms').setAttribute('href', 'sms:?body=' + encodeURIComponent(shareText + ' ' + shareUrl));
+    document.getElementById('shareSms').setAttribute('target', '_blank');
+  </script>
+</body>
+</html>

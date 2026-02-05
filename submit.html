@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>유닛 접수 | 콩한쪽</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #1a0f0f;
+      --bg-gradient: radial-gradient(120% 120% at 10% 10%, #2d1515 0%, #1a0f0f 40%, #0d0808 100%);
+      --surface: rgba(255, 255, 255, 0.08);
+      --surface-strong: rgba(255, 255, 255, 0.12);
+      --ink: #f5e6e6;
+      --muted: #a08080;
+      --brand: #c0392b;
+      --brand-strong: #922b21;
+      --border: rgba(160, 80, 80, 0.2);
+      --radius-md: 20px;
+      --radius-sm: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      background-image: var(--bg-gradient);
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    .shell {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 24px 0 40px;
+    }
+
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+    }
+    .back:hover { color: var(--brand-strong); }
+
+    .intro {
+      text-align: center;
+      margin-bottom: 28px;
+      padding: 20px 16px;
+      background: var(--surface-strong);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+
+    .intro h1 {
+      font-size: 1.35rem;
+      margin: 0 0 16px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .intro p {
+      font-size: 0.95rem;
+      line-height: 1.65;
+      color: var(--ink);
+      margin: 0;
+    }
+
+    .intro p + p { margin-top: 12px; }
+
+    .card {
+      background: var(--surface-strong);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      margin-bottom: 20px;
+    }
+
+    .card h2 {
+      font-size: 1.05rem;
+      margin: 0 0 20px;
+      font-weight: 700;
+    }
+
+    .input-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      border: 2px solid rgba(160, 80, 80, 0.35);
+      background: rgba(255, 255, 255, 0.95);
+      font-size: 1rem;
+      font-weight: 500;
+      color: #1a0f0f;
+    }
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--brand);
+      background: #fff;
+    }
+    .input-group input::placeholder {
+      color: #888;
+    }
+
+    .input-group + .input-group { margin-top: 18px; }
+
+    .agree-wrap {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-top: 22px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .agree-wrap input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      flex-shrink: 0;
+      accent-color: var(--brand);
+      cursor: pointer;
+    }
+
+    .agree-wrap label {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: var(--ink);
+      cursor: pointer;
+    }
+    .agree-wrap label a { color: var(--brand-strong); text-decoration: underline; }
+
+    .btn-submit {
+      width: 100%;
+      padding: 18px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: linear-gradient(130deg, var(--brand-strong), var(--brand));
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      margin-top: 24px;
+    }
+    .btn-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(192, 57, 43, 0.4);
+    }
+
+    .error-msg {
+      font-size: 0.85rem;
+      color: #e74c3c;
+      margin-top: 8px;
+      display: none;
+    }
+    .error-msg.visible { display: block; }
+
+    @media (min-width: 480px) {
+      body { padding: 24px; }
+      .card { padding: 28px; }
+      .intro { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <a class="back" href="index.html">← 메인으로</a>
+
+    <section class="intro">
+      <h1>에어팟 한쪽, 콩한쪽에 맡기세요</h1>
+      <p>한쪽을 잃어버려 좌절 중이신가요? 남은 유닛을 콩한쪽으로 보내주시면, 저희가 꼼꼼히 검수한 뒤 AI가 딱 맞는 상대와 매칭해 드립니다.</p>
+      <p>게임에서 승리하면 완전체 에어팟을 되찾을 수 있어요. 지금 도전하세요!</p>
+    </section>
+
+    <form class="card" id="submit-form">
+      <h2>접수 정보</h2>
+      <div class="input-group">
+        <label for="name">이름</label>
+        <input type="text" id="name" name="name" placeholder="홍길동" required>
+        <span class="error-msg" id="nameError">이름을 입력해 주세요.</span>
+      </div>
+      <div class="input-group">
+        <label for="email">이메일</label>
+        <input type="email" id="email" name="email" placeholder="example@email.com" required>
+        <span class="error-msg" id="emailError">올바른 이메일을 입력해 주세요.</span>
+      </div>
+      <div class="input-group">
+        <label for="phone">전화번호</label>
+        <input type="tel" id="phone" name="phone" placeholder="010-0000-0000" required>
+        <span class="error-msg" id="phoneError">전화번호를 입력해 주세요.</span>
+      </div>
+      <div class="input-group">
+        <label for="address">주소</label>
+        <input type="text" id="address" name="address" placeholder="유닛 수령·반송에 사용할 주소" required>
+        <span class="error-msg" id="addressError">주소를 입력해 주세요.</span>
+      </div>
+      <div class="agree-wrap">
+        <input type="checkbox" id="agree" name="agree" required>
+        <label for="agree">개인정보 수집 및 이용에 동의합니다. (접수·매칭·배송 목적)</label>
+      </div>
+      <span class="error-msg" id="agreeError">개인정보 수집 동의가 필요합니다.</span>
+      <button type="submit" class="btn-submit">제출하기</button>
+    </form>
+  </div>
+
+  <script>
+    var form = document.getElementById('submit-form');
+    var agree = document.getElementById('agree');
+    var agreeError = document.getElementById('agreeError');
+
+    function hideErrors() {
+      [ 'nameError', 'emailError', 'phoneError', 'addressError', 'agreeError' ].forEach(function(id) {
+        document.getElementById(id).classList.remove('visible');
+      });
+    }
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      hideErrors();
+
+      var name = document.getElementById('name').value.trim();
+      var email = document.getElementById('email').value.trim();
+      var phone = document.getElementById('phone').value.trim();
+      var address = document.getElementById('address').value.trim();
+
+      var ok = true;
+      if (!name) { document.getElementById('nameError').classList.add('visible'); ok = false; }
+      if (!email) { document.getElementById('emailError').classList.add('visible'); ok = false; }
+      if (!phone) { document.getElementById('phoneError').classList.add('visible'); ok = false; }
+      if (!address) { document.getElementById('addressError').classList.add('visible'); ok = false; }
+      if (!agree.checked) { agreeError.classList.add('visible'); ok = false; }
+
+      if (!ok) return;
+
+      // 제출 성공 → 메인으로 이동
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>

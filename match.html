@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 매칭 | 콩한쪽</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #1a0f0f;
+      --bg-gradient: radial-gradient(120% 120% at 10% 10%, #2d1515 0%, #1a0f0f 40%, #0d0808 100%);
+      --surface: rgba(255, 255, 255, 0.08);
+      --surface-strong: rgba(255, 255, 255, 0.12);
+      --ink: #f5e6e6;
+      --muted: #a08080;
+      --brand: #c0392b;
+      --brand-strong: #922b21;
+      --accent: #27ae60;
+      --border: rgba(160, 80, 80, 0.2);
+      --radius-md: 20px;
+      --radius-sm: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      background-image: var(--bg-gradient);
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    .shell {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 24px 0;
+    }
+
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+    }
+    .back:hover { color: var(--brand-strong); }
+
+    h1 {
+      font-size: 1.5rem;
+      margin: 0 0 24px;
+      font-weight: 800;
+    }
+
+    .card {
+      background: var(--surface-strong);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      margin-bottom: 20px;
+    }
+
+    .input-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    .input-group select,
+    .input-group input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      border: 2px solid rgba(160, 80, 80, 0.35);
+      background: rgba(255, 255, 255, 0.95);
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: #1a0f0f;
+    }
+    .input-group select:focus,
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--brand);
+      background: #fff;
+    }
+    .input-group select option {
+      color: #1a0f0f;
+      background: #fff;
+    }
+
+    .input-group + .input-group { margin-top: 18px; }
+
+    .slider-row { display: flex; align-items: center; gap: 12px; }
+    .slider-row input[type="range"] { flex: 1; }
+    .slider-value { font-weight: 700; color: var(--brand-strong); min-width: 64px; text-align: right; }
+
+    .btn {
+      width: 100%;
+      padding: 18px;
+      border-radius: var(--radius-sm);
+      border: none;
+      font-weight: 700;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      margin-top: 24px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(130deg, var(--brand-strong), var(--brand));
+      color: #fff;
+      box-shadow: 0 16px 34px rgba(91, 95, 251, 0.28);
+    }
+    .btn-primary:hover { transform: translateY(-1px); }
+
+    .match-result {
+      min-height: 120px;
+      display: grid;
+      gap: 14px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .match-result #resultContent {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .match-result .match-profile {
+      text-align: center;
+    }
+
+    .result-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(91, 95, 251, 0.12);
+      color: var(--brand-strong);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .match-profile {
+      padding: 18px;
+      border-radius: var(--radius-sm);
+      background: rgba(91, 95, 251, 0.08);
+      border: 1px solid var(--border);
+    }
+
+    .match-profile h3 { margin: 0 0 8px; font-size: 1.1rem; }
+    .match-meta { font-size: 0.9rem; color: var(--muted); display: grid; gap: 4px; }
+    .compatibility {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      background: rgba(39, 174, 96, 0.2);
+      color: var(--accent);
+      font-weight: 700;
+      margin-top: 14px;
+    }
+
+    .match-profile h3,
+    .match-meta { color: var(--ink); }
+
+    .game-entry-wrap { margin-top: 20px; display: flex; justify-content: center; width: 100%; }
+    .game-entry-wrap .btn { margin-top: 0; }
+
+    .hidden { display: none !important; }
+
+    @media (min-width: 480px) {
+      body { padding: 24px; }
+      .card { padding: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <a class="back" href="index.html">← 메인으로</a>
+    <h1>AI 매칭</h1>
+
+    <form class="card match-form" id="match-form">
+      <div class="input-group">
+        <label for="model">보유 중인 모델</label>
+        <select id="model" name="model" required>
+          <option value="AirPods Pro 2">AirPods Pro 2</option>
+          <option value="AirPods Pro 1">AirPods Pro 1</option>
+          <option value="AirPods 3">AirPods 3</option>
+          <option value="AirPods 2">AirPods 2</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="side">보유 중인 방향</label>
+        <select id="side" name="side" required>
+          <option value="left">좌측만 남았어요</option>
+          <option value="right">우측만 남았어요</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="condition">내 에어팟 컨디션</label>
+        <select id="condition" name="condition" required>
+          <option value="S">S급 · 거의 새것</option>
+          <option value="A">A급 · 생활기스 정도</option>
+          <option value="B">B급 · 눈에 띄는 사용감</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="usageMonths">사용 기간</label>
+        <div class="slider-row">
+          <input type="range" id="usageMonths" name="usageMonths" min="0" max="36" step="1" value="8">
+          <span class="slider-value" id="usageValue">8개월</span>
+        </div>
+      </div>
+      <button class="btn btn-primary" type="submit">AI 매칭 돌리기</button>
+    </form>
+
+    <aside class="card match-result hidden" id="match-result">
+      <span class="result-badge" id="resultBadge">🎯 매칭 결과</span>
+      <div id="resultContent"></div>
+      <div class="game-entry-wrap hidden" id="gameEntryWrap">
+        <a class="btn btn-primary" href="destiny.html" id="gameEntryBtn">게임 입장하기</a>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    const usageInput = document.getElementById('usageMonths');
+    const usageValue = document.getElementById('usageValue');
+    const matchForm = document.getElementById('match-form');
+    const matchResult = document.getElementById('match-result');
+    const resultContent = document.getElementById('resultContent');
+    const gameEntryWrap = document.getElementById('gameEntryWrap');
+
+    // AI 매칭 상대 후보 목록 (수정·추가 가능, CONFIG.md "3. AI 매칭 상대 풀" 참고)
+    const partnerPool = [
+      { name: '윤서', model: 'AirPods Pro 2', side: 'right', usageMonths: 9, condition: 'S', distance: '서울 성수동', vibe: '출퇴근 러너', message: '지하철에서 오른쪽 한 쪽을 잃어버렸어요. 좌측만 남았습니다!' },
+      { name: '지호', model: 'AirPods Pro 2', side: 'left', usageMonths: 6, condition: 'A', distance: '부산 서면', vibe: '밴드 드러머', message: '공연 끝나고 정신없이 챙기다 한 쪽이 사라졌어요.' },
+      { name: '혜림', model: 'AirPods 3', side: 'right', usageMonths: 10, condition: 'A', distance: '대구 동성로', vibe: '콘텐츠 마케터', message: '오른쪽만 남아서 드라마 몰입도가 50%로 줄었어요!' },
+      { name: '민후', model: 'AirPods 3', side: 'left', usageMonths: 12, condition: 'B', distance: '서울 연남동', vibe: '카페 투어러', message: '카페에서 충전하다가 누가 가져갔는지 오른쪽이 없어졌어요.' },
+      { name: '소연', model: 'AirPods Pro 1', side: 'right', usageMonths: 18, condition: 'B', distance: '인천 송도', vibe: '필라테스 러버', message: '필라테스 장비 사이로 굴러간 것 같아요. 왼쪽만 살았습니다.' },
+      { name: '태준', model: 'AirPods Pro 1', side: 'left', usageMonths: 16, condition: 'A', distance: '대전 둔산동', vibe: '게임 스트리머', message: '새벽 방송하다가 왼쪽이 갑자기 침대 밑으로 사라졌어요.' },
+      { name: '다은', model: 'AirPods 2', side: 'right', usageMonths: 20, condition: 'B', distance: '경주 황성동', vibe: '여행 크리에이터', message: '여행 중에 떨어뜨려서 오른쪽이 고별인사했어요.' },
+      { name: '정우', model: 'AirPods 2', side: 'left', usageMonths: 14, condition: 'A', distance: '서울 광화문', vibe: '도심 포토그래퍼', message: '찍다가 부산하게 움직이다 왼쪽만 살아남았습니다.' }
+    ];
+
+    const conditionLabel = { S: 'S급 · 거의 새것', A: 'A급 · 생활기스 정도', B: 'B급 · 눈에 띄는 사용감' };
+
+    usageInput.addEventListener('input', () => {
+      usageValue.textContent = usageInput.value + '개월';
+    });
+
+    matchForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formData = new FormData(matchForm);
+      const model = formData.get('model');
+      const haveSide = formData.get('side');
+      const needSide = haveSide === 'left' ? 'right' : 'left';
+      const condition = formData.get('condition');
+      const usageMonths = Number(formData.get('usageMonths'));
+
+      const candidates = partnerPool
+        .filter((p) => p.model === model && p.side === needSide)
+        .map((p) => {
+          const usageGap = Math.abs(p.usageMonths - usageMonths);
+          const conditionGap = Math.abs(p.condition.charCodeAt(0) - condition.charCodeAt(0));
+          const score = usageGap * 2 + conditionGap * 5;
+          const compatibility = Math.max(48, Math.round(100 - score * 3));
+          return { ...p, score, compatibility };
+        })
+        .sort((a, b) => a.score - b.score);
+
+      if (candidates.length === 0) {
+        sessionStorage.setItem('matchPending', JSON.stringify({ noMatch: true }));
+        location.href = 'matching.html';
+        return;
+      }
+
+      const best = candidates[0];
+      const payload = {
+        mySide: haveSide,
+        model: model,
+        condition: condition,
+        oppModel: best.model,
+        oppSide: best.side,
+        oppCondition: best.condition
+      };
+      sessionStorage.setItem('matchPending', JSON.stringify(payload));
+      location.href = 'matching.html';
+    });
+  </script>
+</body>
+</html>

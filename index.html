@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>콩한쪽 — 잃어버린 에어팟을 건 운명의 게임</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #1a0f0f;
+      --bg-gradient: radial-gradient(120% 120% at 10% 10%, #2d1515 0%, #1a0f0f 40%, #0d0808 100%);
+      --surface: rgba(255, 255, 255, 0.08);
+      --surface-strong: rgba(255, 255, 255, 0.12);
+      --ink: #f5e6e6;
+      --muted: #a08080;
+      --brand: #c0392b;
+      --brand-strong: #922b21;
+      --border: rgba(160, 80, 80, 0.2);
+      --shadow: 0 30px 80px rgba(80, 20, 20, 0.35);
+      --radius-lg: 32px;
+      --radius-md: 20px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      background-image: var(--bg-gradient);
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 16px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      width: 280px;
+      height: 280px;
+      background: linear-gradient(140deg, rgba(192, 57, 43, 0.25), rgba(146, 43, 33, 0.2));
+      filter: blur(100px);
+      z-index: -2;
+      transform: translate(-50%, -50%);
+    }
+    body::before { top: 16%; left: 10%; }
+    body::after { bottom: -8%; right: -6%; }
+
+    .shell {
+      max-width: 560px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .hero-copy {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .hero-copy h1 {
+      font-size: clamp(1.75rem, 5vw, 2.25rem);
+      line-height: 1.3;
+      letter-spacing: -0.5px;
+      margin: 0 0 28px;
+      font-weight: 900;
+    }
+
+    .hero-copy h1 span { color: var(--brand-strong); }
+
+    .hero-ctas {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .hero-ctas a {
+      display: inline-block;
+      padding: 18px 32px;
+      border-radius: 16px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .hero-ctas .primary {
+      background: linear-gradient(130deg, var(--brand-strong), var(--brand));
+      color: #fff;
+      box-shadow: 0 16px 35px rgba(91, 95, 251, 0.35);
+    }
+
+    .hero-ctas .primary:hover {
+      transform: translateY(-2px);
+    }
+
+    .hero-ctas .secondary {
+      background: var(--surface-strong);
+      color: var(--ink);
+      border: 2px solid var(--border);
+    }
+    .hero-ctas .secondary:hover {
+      border-color: var(--brand);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    .hero-panel {
+      background: var(--surface-strong);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      color: var(--ink);
+    }
+
+    .hero-panel h2 {
+      font-size: 1.1rem;
+      margin: 0 0 16px;
+      font-weight: 700;
+    }
+
+    .bottom-cta {
+      margin-top: 28px;
+      padding-top: 8px;
+    }
+
+    .preview-list { display: grid; gap: 10px; }
+
+    .preview-card {
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--ink);
+    }
+
+    .preview-card .badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      color: var(--brand-strong);
+      background: rgba(91, 95, 251, 0.12);
+      font-size: 0.9rem;
+    }
+
+    .preview-card p { margin: 0; font-weight: 600; font-size: 0.95rem; }
+    .preview-card span { display: block; font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+
+    @media (min-width: 480px) {
+      body { padding: 24px; }
+      .shell { max-width: 520px; }
+      .hero-panel { padding: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <main>
+      <section class="hero-copy">
+        <h1><span>콩한쪽</span><br>잃어버린 에어팟을 건 운명의 게임</h1>
+        <div class="hero-ctas">
+          <a class="primary" href="match.html">AI 매칭하기</a>
+        </div>
+      </section>
+      <article class="hero-panel">
+        <h2>오늘 매칭 대기 현황</h2>
+        <!-- 아래 카드는 샘플입니다. 수정하려면 CONFIG.md "2. 메인 페이지 대기 현황" 참고 -->
+        <div class="preview-list">
+          <div class="preview-card">
+            <div class="badge">L</div>
+            <div>
+              <p>AirPods Pro 2 · 좌측 한 쪽</p>
+              <span>"노이즈캔슬링 다시 느끼고 싶어요"</span>
+            </div>
+          </div>
+          <div class="preview-card">
+            <div class="badge">R</div>
+            <div>
+              <p>AirPods 3 · 우측 한 쪽</p>
+              <span>"반쪽이라 BGM이 울려요 😢"</span>
+            </div>
+          </div>
+          <div class="preview-card">
+            <div class="badge">L</div>
+            <div>
+              <p>AirPods Pro 1 · 좌측 한 쪽</p>
+              <span>"운명의 짝을 찾고 싶어요"</span>
+            </div>
+          </div>
+        </div>
+      </article>
+      <div class="hero-ctas bottom-cta">
+        <a class="secondary" href="submit.html">새로 오셨어요? 접수하기!</a>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
